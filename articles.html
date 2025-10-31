@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Unread Archive | Articles</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Georgia', serif;
+      line-height: 1.6;
+      color: #fdfdfd;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      overflow-x: hidden; /* ✅ prevent horizontal scroll */
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://www.transparenttextures.com/patterns/stardust.png') repeat;
+      animation: moveStars 60s linear infinite;
+      opacity: 0.5;
+    }
+    @keyframes moveStars {
+      from { transform: translateY(0); }
+      to { transform: translateY(-100px); }
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 30px;
+      position: relative;
+      z-index: 1000;
+    }
+    .site-logo img {
+      height: 50px;
+      background-color: #fff;
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    }
+    .branding {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-left: 15px;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffda79;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+    }
+    .tagline {
+      font-size: 1rem;
+      color: #cccccc;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .profile {
+      position: relative;
+      display: inline-block;
+    }
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: rgba(0,0,0,0.95);
+      border-radius: 6px;
+      min-width: 160px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    }
+    .profile-dropdown a {
+      display: block;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .profile-dropdown a:hover {
+      background: rgba(255,218,121,0.1);
+      color: #ffda79;
+    }
+    .profile:hover .profile-dropdown {
+      display: block;
+    }
+    nav {
+      width: 100%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      position: sticky;
+      top: 0;
+      z-index: 900;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 30px;
+      font-size: large;
+    }
+    .nav-left, .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+    nav a {
+      text-decoration: none;
+      font-weight: 500;
+      padding: 15px 18px;
+      color: #fdfdfd;
+      transition: all 0.3s ease;
+    }
+    nav a:hover {
+      color: #ffda79;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+    }
+    .search-box {
+      position: absolute;
+      right: 20px;
+    }
+    .search-box input {
+      padding: 12px 36px;
+      border: none;
+      border-radius: 20px;
+      outline: none;
+      font-size: 0.9em;
+      text-align: right;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 2fr; 
+      gap: 40px;
+      padding: 40px;
+      width: 90%;
+      max-width: 1200px;
+      margin: auto;
+      align-items: stretch;
+    }
+    .left-rect {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .right-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start; 
+    }
+    .content-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 20px 25px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 280px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .right-grid article.content-card {
+      height: 100%;
+    }
+    .right-grid article.content-card:nth-child(1),
+    .right-grid article.content-card:nth-child(2) {
+      min-height: 320px; /* force equal height */
+    }
+    .content-card h2 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid rgba(255,255,255,0.3);
+      padding-bottom: 6px;
+    }
+    .content-card p, 
+    .content-card ul {
+      margin: 0;
+      padding: 0;
+      list-style: disc;
+      padding-left: 18px;
+      line-height: 1.6;
+    }
+    .content-card ul li {
+      margin-bottom: 6px;
+    }
+    .content-card a {
+      color: #ffda79;
+      text-decoration: none;
+    }
+    .content-card a:hover {
+      text-decoration: underline;
+    }
+    blockquote {
+      font-style: italic;
+      margin: 10px 0;
+    }
+    cite {
+      display: block;
+      text-align: right;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+      margin-top: auto;
+      background: #111;
+      color: #fdfdfd;
+      position: relative;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+    footer a {
+      color: #111;
+      background: #ffda79;
+      padding: 5px 12px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer a:hover {
+      background: #ffc94d;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="site-logo">
+      <a href="./index.html">
+        <img src="./ChatGPT Image Sep 25, 2025, 10_46_26 AM.png" alt="The Unread Archive logo">
+      </a>
+    </div>
+    <div class="branding">
+      <div class="logo">✉ THE UNREAD ARCHIVE</div>
+      <p class="tagline">Your digital sanctuary for timeless words.</p>
+    </div>
+    <div class="profile">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile icon" class="profile-icon">
+      <div class="profile-dropdown" role="menu">
+        <a href="signin.html">Sign In</a>
+        <a href="accomplishments.html">Accomplishments</a>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="archive.html">Archive</a>
+        <a href="articles.html">Articles</a>
+        <a href="book.html">Books</a>
+        <a href="./signin.html">Sign In</a>
+      </div>
+      <div class="search-box">
+        <input id="searchInput" type="text" placeholder="Search...">
+      </div>
+    </div>
+  </nav>
+
+<!--
+
+<div class="container">
+    <div class="left-rect">
+      <h2>Quotes</h2>
+      <blockquote>“The opposite of love is not hate, it's indifference...” <cite>— Elie Wiesel</cite></blockquote>
+      <blockquote>“Never doubt that a small group of thoughtful, committed citizens can change the world...” <cite>— Margaret Mead</cite></blockquote>
+      <blockquote>“How wonderful it is that nobody need wait a single moment...” <cite>— Anne Frank</cite></blockquote>
+      <blockquote>“Man is a mystery. It needs to be unraveled...” <cite>— Fyodor Dostoevsky</cite></blockquote>
+      <blockquote>"I cannot make you understand... what is happening inside me." <cite>— Franz Kafka</cite></blockquote>
+      <blockquote>"I never wish to be easily defined... transparent, paradoxically iridescent creature." <cite>— Franz Kafka</cite></blockquote>
+      <blockquote>"I have a deeply hidden and inarticulate desire..." <cite>— Virginia Woolf</cite></blockquote>
+      <blockquote>"What is the meaning of life? ... little daily miracles..." <cite>— Virginia Woolf</cite></blockquote>
+    </div>
+    
+    <div class="right-grid">
+      <article class="content-card">
+        <header><h2>Poetry</h2></header>
+        <ul>
+          <li><a href="https://discoverpoetry.com/poems/robert-frost/the-road-not-taken/" target="_blank">The Road Not Taken – Robert Frost</a></li>
+          <li><a href="https://discoverpoetry.com/poems/walt-whitman/o-captain-my-captain/" target="_blank">O Captain! My Captain! – Walt Whitman</a></li>
+          <li><a href="https://discoverpoetry.com/poems/robert-frost/fire-and-ice/" target="_blank">Fire and Ice – Robert Frost</a></li>
+          <li><a href="https://discoverpoetry.com/poems/william-wordsworth/the-world-is-too-much-with-us/" target="_blank">The World is Too Much With Us – Wordsworth</a></li>
+          <li><a href="https://discoverpoetry.com/poems/emily-dickinson/i-felt-a-funeral-in-my-brain/" target="_blank">I Felt a Funeral in My Brain – Emily Dickinson</a></li>
+          <li><a href="https://discoverpoetry.com/poems/walt-whitman/a-noiseless-patient-spider/" target="_blank">A Noiseless Patient Spider – Walt Whitman</a></li>
+          <li><a href="https://discoverpoetry.com/poems/olive-a-wadsworth/over-in-the-meadow/" target="_blank">Over in the Meadow – Olive A. Wadsworth</a></li>
+          <li><a href="https://discoverpoetry.com/poems/william-cullen-bryant/the-gladness-of-nature/" target="_blank">The Gladness of Nature – William Cullen Bryant</a></li>
+        </ul>
+      </article>
+      <article class="content-card">
+        <header><h2>Short Stories</h2></header>
+        <ul>
+          <li><a href="https://americanliterature.com/author/matsuo-basho/short-story/the-aged-mother/" target="_blank">The Aged Mother – Matsuo Basho</a></li>
+          <li><a href="https://americanliterature.com/author/oscar-wilde/short-story/the-nightingale-and-the-rose/" target="_blank">The Nightingale and the Rose – Oscar Wilde</a></li>
+          <li><a href="https://americanliterature.com/author/bjrnstjerne-bjrnson/short-story/the-father/" target="_blank">The Father – Bjørnson</a></li>
+          <li><a href="https://americanliterature.com/author/aleksandr-i-kuprin/short-story/a-clump-of-lilacs/" target="_blank">A Clump of Lilacs – Kuprin</a></li>
+          <li><a href="https://americanliterature.com/author/hh-munro-saki/short-story/the-toys-of-peace/" target="_blank">The Toys of Peace – H.H. Munro (Saki)</a></li>
+          <li><a href="https://americanliterature.com/author/o-henry/short-story/the-romance-of-a-busy-broker" target="_blank">The Romance of a Busy Broker – O. Henry</a></li>
+          <li><a href="https://americanliterature.com/author/hans-christian-andersen/short-story/the-little-match-girl" target="_blank">The Little Match Girl – Hans Christian Andersen</a></li>
+          <li><a href="https://americanliterature.com/author/jack-london/short-story/to-build-a-fire" target="_blank">To Build a Fire – Jack London</a></li>
+          <li><a href="https://americanliterature.com/author/ambrose-bierce/short-story/an-occurrence-at-owl-creek-bridge" target="_blank">An Occurrence at Owl Creek Bridge – Ambrose Bierce</a></li>
+          <li><a href="https://americanliterature.com/author/w-w-jacobs/short-story/the-monkeys-paw" target="_blank">The Monkey's Paw –  W. W. Jacobs</a></li>
+        </ul>
+      </article>
+      <div class="content-card">
+        <header><h2><a href="./archive.html">Community Spotlight</a></h2></header>
+        <p>Discover rising voices in our writing community. Each week, we highlight fresh perspectives, creative works, and hidden gems submitted by readers and writers just like you.</p>
+      </div>
+      <div class="content-card">
+        <header><h2>Did You Know?</h2></header>
+        <p>The term “novel” comes from the Italian word <em>novella</em>, meaning “new.” It was first used to describe short stories during the Renaissance before evolving into the long-form works we know today.</p>
+      </div>
+    </div>
+  </div>
+
+  -->
+  <div class="container">
+    <div class="left-rect">
+      <h2>Quotes</h2>
+      <blockquote>“The opposite of love is not hate, it's indifference...” <cite>— Elie Wiesel</cite></blockquote>
+      <blockquote>“Never doubt that a small group of thoughtful, committed citizens can change the world...” <cite>— Margaret Mead</cite></blockquote>
+      <blockquote>“How wonderful it is that nobody need wait a single moment...” <cite>— Anne Frank</cite></blockquote>
+      <blockquote>“Man is a mystery. It needs to be unraveled...” <cite>— Fyodor Dostoevsky</cite></blockquote>
+      <blockquote>"I cannot make you understand... what is happening inside me." <cite>— Franz Kafka</cite></blockquote>
+      <blockquote>"I never wish to be easily defined... transparent, paradoxically iridescent creature." <cite>— Franz Kafka</cite></blockquote>
+      <blockquote>"I have a deeply hidden and inarticulate desire..." <cite>— Virginia Woolf</cite></blockquote>
+      <blockquote>"What is the meaning of life? ... little daily miracles..." <cite>— Virginia Woolf</cite></blockquote>
+   
+    
+    </div>
+
+    <div class="right-grid">
+      <!-- Articles will be rendered here by renderArticlesPage -->
+    </div>
+  </div>
+  <footer>
+    <p>Contact us:
+      <a href="mailto:contact@unreadarchive.com">contact@unreadarchive.com</a>
+    </p>
+    <p>&copy; 2025 The Unread Archive — A digital home for readers and writers.</p>
+  </footer>
+  <script src="oop.js"></script>
+  <script src="json.js"></script>
+</body>
+</html>

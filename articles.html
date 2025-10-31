@@ -145,24 +145,31 @@
       font-size: 0.9em;
       text-align: right;
     }
-      #clearSearchBtn {
+    
+    .search-box, #clearSearchBtn {
+      position: relative;
+      gap: 6px;
+    }
+    #clearSearchBtn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
       background: #ffda79;
       border: none;
       border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 16px;
+      line-height: 20px;
       cursor: pointer;
-      font-size: 1.1em;
-      font-weight: bold;
-      width: 30px;
-      height: 30px;
-      color: #111;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
+      padding: 0;
     }
     #clearSearchBtn:hover {
       background: #ffc94d;
-      transform: scale(1.05);
     }
 
     .container {
@@ -305,7 +312,7 @@
     </div>
   </nav>
 
-<!--
+
 
 <div class="container">
     <div class="left-rect">
@@ -360,32 +367,7 @@
     </div>
   </div>
 
-  -->
-  <main style="flex:1;">
-  <div class="container"></div>
-    <div class="right-grid">
-      <!-- Articles will be rendered here by renderArticlesPage -->
-    </div>
-    <aside class="left-rect">
-        <h2 style="color:#ffda79">Post Section</h2>
-        <div class="post-section" id="postSection">
-          <p style="color:#ddd">Share your story, poem, or article. You must be signed in to post.</p>
-          <input id="postTitle" placeholder="Title" />
-          <textarea id="postContent" rows="6" placeholder="Write your post here..."></textarea>
-          <select id="postCategory">
-            <option value="General">General</option>
-            <option value="Poem">Poem</option>
-            <option value="Story">Story</option>
-            <option value="Essay">Essay</option>
-          </select>
-          <div class="post-actions">
-            <button class="btn" id="postCancel">Cancel</button>
-            <button class="btn btn-primary" id="postSubmit">Submit Post</button>
-          </div>
-        </div>
-    </aside>
-  </div>
-  </main>
+ 
   <footer>
     <p>Contact us:
       <a href="mailto:contact@unreadarchive.com">contact@unreadarchive.com</a>
@@ -394,84 +376,12 @@
   </footer>
   <script src="./bundle.js"></script>
   <script>
-    // Ensure global search clear wiring
-    window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
-
-    // Initialize ArchiveManager for feed if .feed present
-    (async function init() {
-      // fetch JSON data (archive.json) - ArchiveManager will handle rendering
-      try {
-        const res = await fetch('archive.json');
-        const data = await res.json();
-        const manager = new window.UnreadArchive.ArchiveManager({
-          containerSelector: '.feed',
-          data: { articles: data.articles || [], books: data.books || [] },
-          searchInputSelector: '#searchInput',
-          clearBtnSelector: '#clearSearchBtn'
-        });
-        // render articles page card layout as well
-        window.UnreadArchive.renderArticlesPage(data.articles || [], '.right-grid');
-      } catch (e) {
-        console.warn('Could not load archive.json', e);
-      }
+    (function(){
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if(!searchInput || !clearBtn) return;
+      clearBtn.addEventListener('click', () => { searchInput.value=''; searchInput.focus(); });
     })();
-
-    // Post section behavior
-    const postSubmit = document.getElementById('postSubmit');
-    const postCancel = document.getElementById('postCancel');
-    const postTitle = document.getElementById('postTitle');
-    const postContent = document.getElementById('postContent');
-    const postCategory = document.getElementById('postCategory');
-
-    function isSignedIn() {
-      return window.UnreadArchive && window.UnreadArchive.Auth && window.UnreadArchive.Auth.isSignedIn();
-    }
-    function requireSignIn(redirectHash) {
-      if (!isSignedIn()) {
-        window.location.href = 'signin.html?returnTo=articles.html' + (redirectHash ? '#' + redirectHash : '');
-        return false;
-      }
-      return true;
-    }
-
-    // clicking the post-section area if not signed in redirects to signin
-    document.getElementById('postSection').addEventListener('click', function (e) {
-      if (!isSignedIn()) {
-        window.location.href = 'signin.html?returnTo=articles.html#post';
-      }
-    });
-
-    postSubmit.addEventListener('click', function () {
-      if (!requireSignIn('post')) return;
-      const title = postTitle.value.trim();
-      const content = postContent.value.trim();
-      const category = postCategory.value;
-      if (!title || !content) { alert('Please provide a title and content for your post.'); return; }
-      window.UnreadArchive.Posts.add({
-        title, content, category, author: (window.UnreadArchive.Auth.getCurrentUser()||{}).email || 'Anonymous'
-      });
-      // refresh articles feed (re-render)
-      // simplest: reload the page so ArchiveManager re-reads posts
-      window.location.reload();
-    });
-
-    postCancel.addEventListener('click', function () {
-      postTitle.value = '';
-      postContent.value = '';
-    });
-
-    // If we land after sign-in with hash #post, focus the form
-    if (window.location.hash && window.location.hash.includes('post')) {
-      // if not signed in, this was redirect target — try focusing after a short delay
-      setTimeout(() => {
-        if (isSignedIn()) {
-          postTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          postTitle.focus();
-        }
-      }, 300);
-    }
-
   </script>
-
 </body>
 </html>

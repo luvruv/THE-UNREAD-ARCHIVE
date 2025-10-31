@@ -407,28 +407,98 @@
     </p>
   </footer>
 <script src="./bundle.js"></script>
+  <script>
+    (async function(){
+      const container = document.getElementById('booksContainer');
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
 
-<script>
-    (async function () {
-      window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
+      function escapeHtml(unsafe) {
+        if (unsafe === undefined || unsafe === null) return '';
+        return String(unsafe).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+      }
+
+      function renderBooks(books){
+        if(!container) return;
+        container.innerHTML = '';
+        if(!books || !books.length) { container.innerHTML = '<div style="color:#fff;padding:20px">No books found.</div>'; return; }
+        books.forEach(book => {
+          const card = document.createElement('div');
+          card.className = 'book-card';
+          const imgSrc = book.image || '';
+          card.innerHTML = `
+            <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(book.title)}">
+            <div class="book-info">
+              <h3>${escapeHtml(book.title)}</h3>
+              <p>${escapeHtml(book.description || '')}</p>
+              <div style="margin-top:8px">
+                <small class="muted">No reviews yet.</small>
+                <div style="margin-top:10px;display:flex;gap:8px">
+                  <input class="review-input" placeholder="Write a short review..." data-bookid="${escapeHtml(book.id)}">
+                  <button class="post-review" data-bookid="${escapeHtml(book.id)}">Post</button>
+                </div>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      let books = [];
       try {
-        const res = await fetch('archive.json');
+        const res = await fetch('./archive.json');
         const data = await res.json();
-        window.UnreadArchive.renderBooksPage(data.books || [], 'booksContainer');
-      } catch (e) {
-        console.warn('books load failed', e);
+        books = data.books || [];
+        renderBooks(books);
+      } catch(err) {
+        console.error('Failed to load books', err);
+        container.innerHTML = '<div style="color:#fff;padding:20px">Unable to load books data.</div>';
       }
-      // if we arrived with hash to focus a review or suggestions (after signin)
-      if (location.hash) {
-        // scroll to corresponding area
-        setTimeout(() => {
-          const id = location.hash.replace('#', '');
-          if (!id) return;
-          const el = document.getElementById(id) || document.querySelector(`[data-bookid="${decodeURIComponent(id.replace('review-',''))}"]`);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 400);
+
+      function filterBooks(q) {
+        const term = (q || '').trim().toLowerCase();
+        if(!term) { renderBooks(books); return; }
+        const filtered = books.filter(b => (`${b.title||''} ${b.description||''}`).toLowerCase().includes(term));
+        renderBooks(filtered);
+        // highlight if available
+        if(typeof highlightMatches === 'function') {
+          container.querySelectorAll('.book-info h3, .book-info p').forEach(el => {
+            el.innerHTML = highlightMatches(el.textContent, q);
+          });
+        }
       }
+
+      if(searchInput) {
+        searchInput.addEventListener('input', e => filterBooks(e.target.value));
+      }
+      if(clearBtn) {
+        clearBtn.addEventListener('click', () => { if(searchInput){ searchInput.value=''; searchInput.focus(); filterBooks(''); } });
+      }
+
+      // Post review (localStorage-based) - simple behavior
+      container.addEventListener('click', (e) => {
+        const postBtn = e.target.closest('.post-review');
+        if(!postBtn) return;
+        const bookId = postBtn.dataset.bookid;
+        const input = container.querySelector(`.review-input[data-bookid="${bookId}"]`);
+        if(!input) return;
+        const text = input.value.trim();
+        if(!text) return alert('Write a short review before posting.');
+        // store reviews via BookData helper if available
+        if(typeof BookData !== 'undefined' && BookData.addReview) {
+          BookData.addReview(bookId, text);
+        } else {
+          // fallback: store in localStorage
+          const key = `unread_book_reviews_${bookId}`;
+          const arr = JSON.parse(localStorage.getItem(key) || '[]');
+          arr.unshift({ text, author: (JSON.parse(localStorage.getItem('currentUser')||'null')||{}).email || 'Anonymous', createdAt: new Date().toISOString()});
+          localStorage.setItem(key, JSON.stringify(arr));
+        }
+        input.value = '';
+        alert('Review posted locally.');
+      });
     })();
   </script>
+
 </body>
 </html>

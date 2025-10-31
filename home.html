@@ -151,6 +151,13 @@
       background: rgba(255,255,255,0.1);
       border-radius: 6px;
     }
+.search-box {
+      position: absolute;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .search-box input {
       padding: 12px 36px;
@@ -159,6 +166,10 @@
       outline: none;
       font-size: 0.9em;
       text-align: right;
+      background: #fff;
+      color: #333;
+      min-width: 260px;
+
     }
   #clearSearchBtn {
       background: #ffda79;
@@ -344,7 +355,20 @@ and much more...
   </footer>
 
 <script src="./bundle.js"></script>
-<script>window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();</script>
+  <script>
+    // Hook clear button behavior in the same way for all pages
+    (function(){
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if(!searchInput || !clearBtn) return;
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchInput.focus();
+        // no page-specific data to re-render here
+      });
+    })();
+  </script>
+
 
 </body>
 </html>

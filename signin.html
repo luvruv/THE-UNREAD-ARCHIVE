@@ -357,40 +357,37 @@
     </p>
   </footer>
  <script src="./bundle.js"></script>
- <script>
-    // wire clear button and global search
-    window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
+<script>
+    // simple local sign-in behavior via bundle.js Auth helper (if present)
+    (function(){
+      const signInBtn = document.getElementById('signinBtn');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
 
-    // parse returnTo query param
-    function getQueryParam(name) {
-      const params = new URLSearchParams(window.location.search);
-      return params.get(name);
-    }
-    const returnTo = getQueryParam('returnTo') || null;
-
-    document.getElementById('signinBtn').addEventListener('click', function () {
-      const email = document.getElementById('email').value.trim();
-      if (!email) { alert('Please enter an email'); return; }
-      // Use Auth from bundle
-      if (window.UnreadArchive && window.UnreadArchive.Auth) {
-        window.UnreadArchive.Auth.signIn(email);
-      } else {
-        localStorage.setItem('currentUser', JSON.stringify({ email: email }));
+      if(signInBtn) {
+        signInBtn.addEventListener('click', () => {
+          const em = email.value && email.value.trim();
+          if(!em) return alert('Enter an email to sign in.');
+          if(typeof Auth !== 'undefined' && Auth.signIn) {
+            Auth.signIn(em);
+            alert('Signed in as ' + em);
+            window.location.href = './home.html';
+          } else {
+            localStorage.setItem('currentUser', JSON.stringify({ email: em, signedAt: Date.now() }));
+            alert('Signed in locally as ' + em);
+            window.location.href = './home.html';
+          }
+        });
       }
-      // redirect back if specified
-      if (returnTo) {
-        // keep hash fragment if provided
-        window.location.href = returnTo;
-      } else {
-        // default to articles
-        window.location.href = 'articles.html';
+
+      // clear search hookup
+      if(clearBtn && searchInput) {
+        clearBtn.addEventListener('click', () => { searchInput.value=''; searchInput.focus(); });
       }
-    });
-
-    // optionally prefill email if we had currentUser
-    const cur = window.UnreadArchive && window.UnreadArchive.Auth && window.UnreadArchive.Auth.getCurrentUser();
-    if (cur && cur.email) document.getElementById('email').value = cur.email;
-
+    })();
   </script>
+
 </body>
 </html>

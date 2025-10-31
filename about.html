@@ -159,6 +159,13 @@
       outline: none;
       font-size: 0.9em;
       text-align: right;
+       background: #fff;
+      color: #333;
+      min-width: 260px;
+    }
+     .search-box, #clearSearchBtn {
+      position: relative;
+      gap: 6px;
     }
   #clearSearchBtn {
       background: #ffda79;
@@ -332,7 +339,14 @@
     </p>
     <p>&copy; 2025 The Unread Archive — A digital home for readers and writers.</p>
   </footer>
-    <script src="./bundle.js"></script>
-    <script>window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();</script>
+      <script src="bundle.js"></script>
+  <script>
+    (function(){
+      const searchInput = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if(!searchInput || !clearBtn) return;
+      clearBtn.addEventListener('click', () => { searchInput.value=''; searchInput.focus(); });
+    })();
+  </script>
 </body>
 </html>

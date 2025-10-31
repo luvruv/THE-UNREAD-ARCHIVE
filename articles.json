@@ -1,82 +1,36 @@
 {
-  "articles": [
-    {
-      "id": 1,
-      "title": "After Babel",
-      "tag": "Culture • Staff pick",
-      "author": "Jane Doe",
-      "subscribers": "12k subscribers",
-      "readTime": "3 min",
-      "excerpt": "A fascinating newsletter about language, culture, and the tiny textures of everyday life.",
-      "image": "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?q=80&w=1200&auto=format&fit=crop"
-    },
-    {
-      "id": 2,
-      "title": "Time Travel Kitchen",
-      "tag": "Food & Drink",
-      "author": "Alex Smith",
-      "subscribers": "8.4k subscribers",
-      "readTime": "5 min",
-      "excerpt": "Recipes, memories, and essays that fold together. Perfect for weekend reading.",
-      "image": "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=1200&auto=format&fit=crop"
-    },
-    {
-      "id": 3,
-      "title": "Two Percent",
-      "tag": "Technology",
-      "author": "Michael Easter",
-      "subscribers": "20k subscribers",
-      "readTime": "4 min",
-      "excerpt": "Tech picks, product essays, and curated links. A clean mix of deep thinking and short reads.",
-      "image": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop"
-    },
-    {
-      "id": 4,
-      "title": "Well Well Well",
-      "tag": "Business",
-      "author": "Rosamund Dean",
-      "subscribers": "6.1k subscribers",
-      "readTime": "8 min",
-      "excerpt": "Business reporting and long reads that break down complicated trends into readable essays.",
-      "image": "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?q=80&w=1200&auto=format&fit=crop"
-    }
+  "quotes": [
+    { "text": "The opposite of love is not hate, it's indifference...", "author": "Elie Wiesel" },
+    { "text": "Never doubt that a small group of thoughtful, committed citizens can change the world...", "author": "Margaret Mead" },
+    { "text": "How wonderful it is that nobody need wait a single moment...", "author": "Anne Frank" },
+    { "text": "Man is a mystery. It needs to be unraveled...", "author": "Fyodor Dostoevsky" },
+    { "text": "I cannot make you understand... what is happening inside me.", "author": "Franz Kafka" },
+    { "text": "I never wish to be easily defined... transparent, paradoxically iridescent creature.", "author": "Franz Kafka" },
+    { "text": "I have a deeply hidden and inarticulate desire...", "author": "Virginia Woolf" },
+    { "text": "What is the meaning of life? ... little daily miracles...", "author": "Virginia Woolf" }
   ],
-  "books": [
-    {
-      "id": "b1",
-      "title": "The Way of Nagomi",
-      "description": "Explains a unique Japanese concept that can help us find and practice a relaxed, effortless form of balance in various areas of life.",
-      "image": "./the way of nagomi.jpg"
-    },
-    {
-      "id": "b2",
-      "title": "The Algebra of Wealth",
-      "description": "A college professor and serial entrepreneur’s personal formula for achieving financial freedom based on focus, Stoicism, time, and diversification.",
-      "image": "https://covers.openlibrary.org/b/id/14896542-L.jpg"
-    },
-    {
-      "id": "b3",
-      "title": "A Tale of Two Cities",
-      "description": "Follows two connected families in 18th-century London and Paris, exploring love, loss, murder, and intrigue.",
-      "image": "./a tale of two cities.jpg"
-    },
-    {
-      "id": "b4",
-      "title": "Alchemy",
-      "description": "A guide to making magic happen in business and life by teaching you how to practice irrational thinking to stand out.",
-      "image": "./the alchemist.jpg"
-    },
-    {
-      "id": "b5",
-      "title": "In Cold Blood",
-      "description": "A groundbreaking 'nonfiction novel' that narrates how Dick Hickock and Perry Smith conspired, murdered the Clutter family in Kansas in 1959.",
-      "image": "./in cold blood.jpg"
-    },
-    {
-      "id": "b6",
-      "title": "No Hard Feelings",
-      "description": "A practical guide to managing the emotional side of work and building resilience.",
-      "image": "./no hard feelings.jpg"
-    }
+
+  "poems": [
+    { "title": "The Road Not Taken", "author": "Robert Frost", "link": "https://discoverpoetry.com/poems/robert-frost/the-road-not-taken/" },
+    { "title": "O Captain! My Captain!", "author": "Walt Whitman", "link": "https://discoverpoetry.com/poems/walt-whitman/o-captain-my-captain/" },
+    { "title": "Fire and Ice", "author": "Robert Frost", "link": "https://discoverpoetry.com/poems/robert-frost/fire-and-ice/" },
+    { "title": "The World is Too Much With Us", "author": "William Wordsworth", "link": "https://discoverpoetry.com/poems/william-wordsworth/the-world-is-too-much-with-us/" },
+    { "title": "I Felt a Funeral in My Brain", "author": "Emily Dickinson", "link": "https://discoverpoetry.com/poems/emily-dickinson/i-felt-a-funeral-in-my-brain/" },
+    { "title": "A Noiseless Patient Spider", "author": "Walt Whitman", "link": "https://discoverpoetry.com/poems/walt-whitman/a-noiseless-patient-spider/" },
+    { "title": "Over in the Meadow", "author": "Olive A. Wadsworth", "link": "https://discoverpoetry.com/poems/olive-a-wadsworth/over-in-the-meadow/" },
+    { "title": "The Gladness of Nature", "author": "William Cullen Bryant", "link": "https://discoverpoetry.com/poems/william-cullen-bryant/the-gladness-of-nature/" }
+  ],
+
+  "stories": [
+    { "title": "The Aged Mother", "author": "Matsuo Basho", "link": "https://americanliterature.com/author/matsuo-basho/short-story/the-aged-mother/" },
+    { "title": "The Nightingale and the Rose", "author": "Oscar Wilde", "link": "https://americanliterature.com/author/oscar-wilde/short-story/the-nightingale-and-the-rose/" },
+    { "title": "The Father", "author": "Bjørnson", "link": "https://americanliterature.com/author/bjrnstjerne-bjrnson/short-story/the-father/" },
+    { "title": "A Clump of Lilacs", "author": "Kuprin", "link": "https://americanliterature.com/author/aleksandr-i-kuprin/short-story/a-clump-of-lilacs/" },
+    { "title": "The Toys of Peace", "author": "H.H. Munro (Saki)", "link": "https://americanliterature.com/author/hh-munro-saki/short-story/the-toys-of-peace/" },
+    { "title": "The Romance of a Busy Broker", "author": "O. Henry", "link": "https://americanliterature.com/author/o-henry/short-story/the-romance-of-a-busy-broker" },
+    { "title": "The Little Match Girl", "author": "Hans Christian Andersen", "link": "https://americanliterature.com/author/hans-christian-andersen/short-story/the-little-match-girl" },
+    { "title": "To Build a Fire", "author": "Jack London", "link": "https://americanliterature.com/author/jack-london/short-story/to-build-a-fire" },
+    { "title": "An Occurrence at Owl Creek Bridge", "author": "Ambrose Bierce", "link": "https://americanliterature.com/author/ambrose-bierce/short-story/an-occurrence-at-owl-creek-bridge" },
+    { "title": "The Monkey's Paw", "author": "W. W. Jacobs", "link": "https://americanliterature.com/author/w-w-jacobs/short-story/the-monkeys-paw" }
   ]
 }

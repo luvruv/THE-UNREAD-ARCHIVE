@@ -406,7 +406,29 @@
       &copy; 2025 The Unread Archive — A digital home for readers and writers.
     </p>
   </footer>
-<script src="oop.js"></script>
-  <script src="json.js"></script>
+<script src="./bundle.js"></script>
+
+<script>
+    (async function () {
+      window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
+      try {
+        const res = await fetch('archive.json');
+        const data = await res.json();
+        window.UnreadArchive.renderBooksPage(data.books || [], 'booksContainer');
+      } catch (e) {
+        console.warn('books load failed', e);
+      }
+      // if we arrived with hash to focus a review or suggestions (after signin)
+      if (location.hash) {
+        // scroll to corresponding area
+        setTimeout(() => {
+          const id = location.hash.replace('#', '');
+          if (!id) return;
+          const el = document.getElementById(id) || document.querySelector(`[data-bookid="${decodeURIComponent(id.replace('review-',''))}"]`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 400);
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -152,6 +152,26 @@
       font-size: 0.9em;
       text-align: right;
     }
+      #clearSearchBtn {
+      background: #ffda79;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      width: 30px;
+      height: 30px;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    #clearSearchBtn:hover {
+      background: #ffc94d;
+      transform: scale(1.05);
+    }
+
   
     .signin-container {
       display: flex;
@@ -300,6 +320,7 @@
       <div class="nav-right">
         <div class="search-box">
           <input id="searchInput" type="text" placeholder="Search...">
+          <button id="clearSearchBtn" class="clear-btn">✕</button>
         </div>
       </div>
     </div>
@@ -335,7 +356,41 @@
       &copy; 2025 The Unread Archive — A digital home for readers and writers.
     </p>
   </footer>
- <script src="oop.js"></script>
-  <script src="json.js"></script>
+ <script src="./bundle.js"></script>
+ <script>
+    // wire clear button and global search
+    window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
+
+    // parse returnTo query param
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+    const returnTo = getQueryParam('returnTo') || null;
+
+    document.getElementById('signinBtn').addEventListener('click', function () {
+      const email = document.getElementById('email').value.trim();
+      if (!email) { alert('Please enter an email'); return; }
+      // Use Auth from bundle
+      if (window.UnreadArchive && window.UnreadArchive.Auth) {
+        window.UnreadArchive.Auth.signIn(email);
+      } else {
+        localStorage.setItem('currentUser', JSON.stringify({ email: email }));
+      }
+      // redirect back if specified
+      if (returnTo) {
+        // keep hash fragment if provided
+        window.location.href = returnTo;
+      } else {
+        // default to articles
+        window.location.href = 'articles.html';
+      }
+    });
+
+    // optionally prefill email if we had currentUser
+    const cur = window.UnreadArchive && window.UnreadArchive.Auth && window.UnreadArchive.Auth.getCurrentUser();
+    if (cur && cur.email) document.getElementById('email').value = cur.email;
+
+  </script>
 </body>
 </html>

@@ -145,6 +145,26 @@
       font-size: 0.9em;
       text-align: right;
     }
+      #clearSearchBtn {
+      background: #ffda79;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      width: 30px;
+      height: 30px;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    #clearSearchBtn:hover {
+      background: #ffc94d;
+      transform: scale(1.05);
+    }
+
     .container {
       display: grid;
       grid-template-columns: 1fr 2fr; 
@@ -280,6 +300,7 @@
       </div>
       <div class="search-box">
         <input id="searchInput" type="text" placeholder="Search...">
+        <button id="clearSearchBtn" class="clear-btn">✕</button>
       </div>
     </div>
   </nav>
@@ -340,32 +361,117 @@
   </div>
 
   -->
-  <div class="container">
-    <div class="left-rect">
-      <h2>Quotes</h2>
-      <blockquote>“The opposite of love is not hate, it's indifference...” <cite>— Elie Wiesel</cite></blockquote>
-      <blockquote>“Never doubt that a small group of thoughtful, committed citizens can change the world...” <cite>— Margaret Mead</cite></blockquote>
-      <blockquote>“How wonderful it is that nobody need wait a single moment...” <cite>— Anne Frank</cite></blockquote>
-      <blockquote>“Man is a mystery. It needs to be unraveled...” <cite>— Fyodor Dostoevsky</cite></blockquote>
-      <blockquote>"I cannot make you understand... what is happening inside me." <cite>— Franz Kafka</cite></blockquote>
-      <blockquote>"I never wish to be easily defined... transparent, paradoxically iridescent creature." <cite>— Franz Kafka</cite></blockquote>
-      <blockquote>"I have a deeply hidden and inarticulate desire..." <cite>— Virginia Woolf</cite></blockquote>
-      <blockquote>"What is the meaning of life? ... little daily miracles..." <cite>— Virginia Woolf</cite></blockquote>
-   
-    
-    </div>
-
+  <main style="flex:1;">
+  <div class="container"></div>
     <div class="right-grid">
       <!-- Articles will be rendered here by renderArticlesPage -->
     </div>
+    <aside class="left-rect">
+        <h2 style="color:#ffda79">Post Section</h2>
+        <div class="post-section" id="postSection">
+          <p style="color:#ddd">Share your story, poem, or article. You must be signed in to post.</p>
+          <input id="postTitle" placeholder="Title" />
+          <textarea id="postContent" rows="6" placeholder="Write your post here..."></textarea>
+          <select id="postCategory">
+            <option value="General">General</option>
+            <option value="Poem">Poem</option>
+            <option value="Story">Story</option>
+            <option value="Essay">Essay</option>
+          </select>
+          <div class="post-actions">
+            <button class="btn" id="postCancel">Cancel</button>
+            <button class="btn btn-primary" id="postSubmit">Submit Post</button>
+          </div>
+        </div>
+    </aside>
   </div>
+  </main>
   <footer>
     <p>Contact us:
       <a href="mailto:contact@unreadarchive.com">contact@unreadarchive.com</a>
     </p>
     <p>&copy; 2025 The Unread Archive — A digital home for readers and writers.</p>
   </footer>
-  <script src="oop.js"></script>
-  <script src="json.js"></script>
+  <script src="./bundle.js"></script>
+  <script>
+    // Ensure global search clear wiring
+    window.UnreadArchive && window.UnreadArchive.wireGlobalSearch && window.UnreadArchive.wireGlobalSearch();
+
+    // Initialize ArchiveManager for feed if .feed present
+    (async function init() {
+      // fetch JSON data (archive.json) - ArchiveManager will handle rendering
+      try {
+        const res = await fetch('archive.json');
+        const data = await res.json();
+        const manager = new window.UnreadArchive.ArchiveManager({
+          containerSelector: '.feed',
+          data: { articles: data.articles || [], books: data.books || [] },
+          searchInputSelector: '#searchInput',
+          clearBtnSelector: '#clearSearchBtn'
+        });
+        // render articles page card layout as well
+        window.UnreadArchive.renderArticlesPage(data.articles || [], '.right-grid');
+      } catch (e) {
+        console.warn('Could not load archive.json', e);
+      }
+    })();
+
+    // Post section behavior
+    const postSubmit = document.getElementById('postSubmit');
+    const postCancel = document.getElementById('postCancel');
+    const postTitle = document.getElementById('postTitle');
+    const postContent = document.getElementById('postContent');
+    const postCategory = document.getElementById('postCategory');
+
+    function isSignedIn() {
+      return window.UnreadArchive && window.UnreadArchive.Auth && window.UnreadArchive.Auth.isSignedIn();
+    }
+    function requireSignIn(redirectHash) {
+      if (!isSignedIn()) {
+        window.location.href = 'signin.html?returnTo=articles.html' + (redirectHash ? '#' + redirectHash : '');
+        return false;
+      }
+      return true;
+    }
+
+    // clicking the post-section area if not signed in redirects to signin
+    document.getElementById('postSection').addEventListener('click', function (e) {
+      if (!isSignedIn()) {
+        window.location.href = 'signin.html?returnTo=articles.html#post';
+      }
+    });
+
+    postSubmit.addEventListener('click', function () {
+      if (!requireSignIn('post')) return;
+      const title = postTitle.value.trim();
+      const content = postContent.value.trim();
+      const category = postCategory.value;
+      if (!title || !content) { alert('Please provide a title and content for your post.'); return; }
+      window.UnreadArchive.Posts.add({
+        title, content, category, author: (window.UnreadArchive.Auth.getCurrentUser()||{}).email || 'Anonymous'
+      });
+      // refresh articles feed (re-render)
+      // simplest: reload the page so ArchiveManager re-reads posts
+      window.location.reload();
+    });
+
+    postCancel.addEventListener('click', function () {
+      postTitle.value = '';
+      postContent.value = '';
+    });
+
+    // If we land after sign-in with hash #post, focus the form
+    if (window.location.hash && window.location.hash.includes('post')) {
+      // if not signed in, this was redirect target — try focusing after a short delay
+      setTimeout(() => {
+        if (isSignedIn()) {
+          postTitle.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          postTitle.focus();
+        }
+      }, 300);
+    }
+
+  </script>
+
 </body>
 </html>

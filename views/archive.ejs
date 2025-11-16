@@ -1,0 +1,47 @@
+<main class="main">
+  <aside class="sidebar" data-search-item="true">
+    <div class="filters">
+      <h2>Filter</h2>
+      <div class="categories">
+        <div class="cat">All</div>
+        <div class="cat">Culture</div>
+        <div class="cat">Food</div>
+        <div class="cat">Technology</div>
+        <div class="cat">Business</div>
+      </div>
+    </div>
+  </aside>
+
+  <section>
+    <div class="feed" id="feedContainer" aria-live="polite">
+      <!-- ArchiveManager will populate cards here -->
+    </div>
+  </section>
+</main>
+
+<script>
+  (async function () {
+    try {
+      const res = await fetch('/archive.json'); // important: leading slash
+      const data = await res.json();
+
+      if (window.UnreadArchive && window.UnreadArchive.ArchiveManager) {
+        new window.UnreadArchive.ArchiveManager({
+          containerSelector: '.feed',
+          data: { articles: data.articles || [], books: data.books || [] },
+          searchInputSelector: '#searchInput',
+          clearBtnSelector: '#clearSearchBtn'
+        });
+
+        // 🔹 Make all archive cards searchable after rendering
+        const feed = document.getElementById('feedContainer');
+        if (feed) {
+          feed.querySelectorAll('.card')
+            .forEach(card => card.setAttribute('data-search-item', 'true'));
+        }
+      }
+    } catch (e) {
+      console.warn('fetch /archive.json failed', e);
+    }
+  })();
+</script>

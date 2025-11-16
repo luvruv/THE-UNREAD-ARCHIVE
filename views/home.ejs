@@ -1,0 +1,58 @@
+<section class="book-section">
+  <div class="book-wrapper">
+    <article class="book-page">
+      <img src="/homeimg.jpg"
+           alt="unread archive"
+           style="width:100%;border-radius: 6px; margin-bottom: 20px; height: auto;">
+    </article>
+
+    <aside class="book-page">
+      <header>
+        <h2>Welcome to The Unread Archive</h2>
+      </header>
+      <p>
+        Welcome to The Unread Archive. We've digitized the delight of paper and ink. Simply
+        turn the page below to discover our featured piece — a poem, a prose reflection, or
+        a critical literary essay.
+      </p>
+      <p>
+        Here, every unread word finds its voice, and every silent page tells a story.
+        Dive into our curated collection of literary treasures, where the past meets the
+        present in a harmonious dance of words.
+      </p>
+      <p>
+        Our mission is to create a digital sanctuary for readers and writers alike.
+        Whether you're here to explore timeless works or share your own, we invite you
+        to immerse yourself in the world of literature.
+      </p>
+      <p>
+        Poems: Verses for the Unspoken <br>
+        Prose: Narratives Uncovered <br>
+        Book recommendations: Uncover the world of literature and classics <br>
+        Create: Share Your Own Pages, share your thoughts <br>
+        and much more.
+      </p>
+      <div id="homeFeatured"></div>
+    </aside>
+  </div>
+</section>
+
+<script>
+  (async function () {
+    try {
+      const res = await fetch('/archive.json');
+      const data = await res.json();
+      const feature = (data.articles && data.articles[0]) || {};
+      if (window.UnreadArchive && window.UnreadArchive.renderHomeFeatured) {
+        window.UnreadArchive.renderHomeFeatured({
+          title: feature.title || "Today's Featured Piece",
+          type: feature.tag || 'Poem',
+          author: feature.author || 'Curated Editor',
+          summary: feature.excerpt || 'A featured work selected for you.'
+        });
+      }
+    } catch (e) {
+      console.warn('Could not load feature for home', e);
+    }
+  })();
+</script>

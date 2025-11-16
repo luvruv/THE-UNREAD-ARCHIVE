@@ -1,0 +1,97 @@
+<div class="signin-container">
+  <div class="signin-box">
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-target="signinPanel">Sign In</button>
+      <button class="auth-tab" data-target="signupPanel">Sign Up</button>
+    </div>
+
+    <!-- SIGN IN PANEL -->
+    <div id="signinPanel" class="auth-panel active">
+      <h2>Sign In</h2>
+      <form action="/signin" method="POST">
+        <div class="form-group">
+          <label for="signinEmail">Email Address</label>
+          <input
+            type="email"
+            id="signinEmail"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="signinPassword">Password</label>
+          <input
+            type="password"
+            id="signinPassword"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <button type="submit" class="signin-btn">Sign In</button>
+      </form>
+      <div class="extra-links">
+        <p><a href="#">Forgot Password?</a></p>
+      </div>
+    </div>
+
+    <!-- SIGN UP PANEL -->
+    <div id="signupPanel" class="auth-panel">
+      <h2>Sign Up</h2>
+      <form action="/signup" method="POST">
+        <div class="form-group">
+          <label for="name">Name (optional)</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Your name or pen name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">Email Address</label>
+          <input
+            type="email"
+            id="signupEmail"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input
+            type="password"
+            id="signupPassword"
+            name="password"
+            placeholder="Create a password"
+            required
+          />
+        </div>
+        <button type="submit" class="signin-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simple tab switcher: Sign In / Sign Up
+  (function () {
+    const tabs = document.querySelectorAll('.auth-tab');
+    const panels = document.querySelectorAll('.auth-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-target');
+
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+  })();
+</script>

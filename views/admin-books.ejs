@@ -1,0 +1,34 @@
+<!-- views/admin-books.ejs -->
+<section style="padding:40px; max-width:900px; margin:0 auto; color:#fff;">
+  <h1 style="margin-bottom:20px;">Manage Books (MongoDB CRUD)</h1>
+
+  <h2>Add New Book</h2>
+  <form action="/admin/books" method="POST" style="display:flex;flex-direction:column;gap:10px;margin-bottom:30px;">
+    <input type="text" name="title" placeholder="Title" required />
+    <textarea name="description" placeholder="Description" rows="3" required></textarea>
+    <input type="text" name="image" placeholder="Image URL or /filename.jpg (optional)" />
+    <button type="submit" style="padding:8px 12px;border:none;border-radius:6px;cursor:pointer;">Create Book</button>
+  </form>
+
+  <h2>Existing Books</h2>
+  <% if (!books || !books.length) { %>
+    <p>No books in database yet.</p>
+  <% } else { %>
+    <% books.forEach(book => { %>
+      <div style="border:1px solid #444;padding:10px;border-radius:8px;margin-bottom:10px;">
+        <form action="/admin/books/<%= book._id %>/edit" method="POST" style="display:flex;flex-direction:column;gap:6px;">
+          <strong>ID:</strong> <%= book._id %>
+          <input type="text" name="title" value="<%= book.title %>" />
+          <textarea name="description" rows="2"><%= book.description %></textarea>
+          <input type="text" name="image" value="<%= book.image || '' %>" placeholder="Image URL" />
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button type="submit" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;">Update</button>
+        </form>
+        <form action="/admin/books/<%= book._id %>/delete" method="POST">
+            <button type="submit" style="padding:6px 10px;border:none;border-radius:6px;cursor:pointer;background:#b91c1c;color:#fff;">Delete</button>
+        </form>
+          </div>
+      </div>
+    <% }) %>
+  <% } %>
+</section>

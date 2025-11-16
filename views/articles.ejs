@@ -1,0 +1,73 @@
+<div class="container">
+  <div class="left-rect" id="quotesContainer" data-search-item="true"></div>
+  <div class="right-grid" id="articlesContainer"></div>
+</div>
+
+<script>
+  (function () {
+    // Community articles from MongoDB (injected by server when available)
+    const communityFromDB =
+      <%- JSON.stringify(typeof communityArticles !== 'undefined' ? communityArticles : []) %>;
+
+    fetch('/articles.json')
+      .then(r => r.json())
+      .then(data => {
+        // Left side: quotes
+        const qContainer = document.getElementById('quotesContainer');
+        qContainer.innerHTML =
+          '<h2>Quotes</h2>' +
+          (data.quotes || [])
+            .map(
+              q =>
+                `<blockquote>“${q.text}” <cite>— ${q.author}</cite></blockquote>`
+            )
+            .join('');
+
+        // Curated articles from JSON
+        const poems = (data.poems || []).map((p, idx) => ({
+          id: 'poem_' + idx,
+          title: p.title,
+          author: p.author,
+          tag: 'Poem',
+          excerpt: p.excerpt || p.title,
+          subscribers: p.subscribers || ''
+        }));
+
+        const stories = (data.stories || []).map((s, idx) => ({
+          id: 'story_' + idx,
+          title: s.title,
+          author: s.author,
+          tag: 'Story',
+          excerpt: s.excerpt || s.title,
+          subscribers: s.subscribers || ''
+        }));
+
+        // Community articles mapped to same shape
+        const community = communityFromDB.map(a => ({
+          id: a._id,
+          title: a.title,
+          author: a.author || 'Anonymous',
+          tag: a.tag || 'Community',
+          excerpt: a.excerpt || (a.content || '').slice(0, 100) + '...',
+          subscribers: ''
+        }));
+
+        const allArticles = [...poems, ...stories, ...community];
+
+        if (window.UnreadArchive && window.UnreadArchive.renderArticlesPage) {
+          window.UnreadArchive.renderArticlesPage(allArticles, '#articlesContainer');
+
+          // 🔹 After cards are rendered, mark them as searchable
+          const container = document.getElementById('articlesContainer');
+          if (container) {
+            container.querySelectorAll('.content-card, .card')
+              .forEach(card => card.setAttribute('data-search-item', 'true'));
+          }
+        } else {
+          document.getElementById('articlesContainer').innerHTML =
+            '<p style="color:#fff;" data-search-item="true">Articles helper not loaded.</p>';
+        }
+      })
+      .catch(err => console.error('Error loading /articles.json:', err));
+  })();
+</script>

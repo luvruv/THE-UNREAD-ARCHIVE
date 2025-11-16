@@ -1,0 +1,50 @@
+<section class="books-section">
+  <aside class="books-list" data-search-item="true">
+    <header>
+      <h2>Bookshelf</h2>
+      <p class="muted">
+        A curated mix of classics, contemporary reads, and thoughtful recommendations.
+      </p>
+    </header>
+
+    <div id="booksContainer" class="books-container">
+      <!-- book cards rendered here -->
+    </div>
+  </aside>
+</section>
+
+<script>
+  (async function () {
+    const mongoBooks = <%- JSON.stringify(books || []) %>;
+
+    let jsonBooks = [];
+    try {
+      const res = await fetch('/archive.json');
+      const data = await res.json();
+      jsonBooks = data.books || [];
+    } catch (err) {
+      console.warn('Could not load /archive.json books', err);
+    }
+
+    const allBooks = [
+      ...jsonBooks,
+      ...mongoBooks.map(b => ({
+        id: b._id,
+        title: b.title,
+        description: b.description,
+        image: b.image
+      }))
+    ];
+
+    if (window.UnreadArchive && window.UnreadArchive.renderBooksPage) {
+      window.UnreadArchive.renderBooksPage(allBooks, 'booksContainer');
+
+      // 🔹 Mark all book cards as searchable
+      const container = document.getElementById('booksContainer');
+      if (container) {
+        container.querySelectorAll('.book-card')
+          .forEach(card => card.setAttribute('data-search-item', 'true'));
+      }
+    }
+  })();
+</script>

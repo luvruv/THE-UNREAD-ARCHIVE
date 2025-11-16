@@ -1,0 +1,132 @@
+<section class="book-section">
+  <div class="book-wrapper">
+    <article class="book-page" data-search-item="true">
+
+      <header>
+        <h2>Start Writing</h2>
+      </header>
+      <p>
+        Share your thoughts, stories, and reflections. Your piece will appear as a
+        part of the archive and on the Articles page under community contributions.
+      </p>
+      <p>
+        Give your work a title, choose a tag, and write freely. We'll handle the rest.
+      </p>
+
+      <% if (!currentUser) { %>
+        <p style="margin-top:10px;font-size:0.9rem;color:#555;">
+          You can publish without an account, but if you <a href="/signin" style="color:#3b82f6;">sign in</a>,
+          your name will be saved with your article.
+        </p>
+      <% } else { %>
+        <p style="margin-top:10px;font-size:0.9rem;color:#555;">
+          Publishing as <strong><%= currentUser.name || currentUser.email %></strong>.
+        </p>
+      <% } %>
+    </article>
+
+     <aside class="book-page" data-search-item="true">
+
+      <form action="/write" method="POST" style="display:flex;flex-direction:column;gap:10px;">
+        <label>
+          Title
+          <input
+            type="text"
+            name="title"
+            required
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          >
+        </label>
+
+        <label>
+          Tag / Category
+          <input
+            type="text"
+            name="tag"
+            placeholder="Poem, Story, Essay, Reflection..."
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          >
+        </label>
+
+        <label>
+          Author name (optional)
+          <input
+            type="text"
+            name="author"
+            placeholder="Your name or pen name"
+            value="<%= currentUser ? (currentUser.name || currentUser.email) : '' %>"
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          >
+        </label>
+
+        <label>
+          Estimated read time (optional)
+          <input
+            type="text"
+            name="readTime"
+            placeholder="e.g. 5 min read"
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          >
+        </label>
+
+        <label>
+          Short excerpt (optional)
+          <textarea
+            name="excerpt"
+            rows="3"
+            placeholder="One or two lines that capture the essence of your piece."
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          ></textarea>
+        </label>
+
+        <label>
+          Cover image URL (optional)
+          <input
+            type="text"
+            name="coverImage"
+            placeholder="https://example.com/image.jpg"
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          >
+        </label>
+
+        <label>
+          Full content
+          <textarea
+            id="articleContent"
+            name="content"
+            rows="8"
+            required
+            placeholder="Write your full article, poem, or story here..."
+            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
+          ></textarea>
+        </label>
+
+        <small id="wordCount" style="color:#555;">Word count: 0</small>
+
+        <button
+          type="submit"
+          style="margin-top:8px;padding:10px 12px;border:none;border-radius:8px;
+                 background:#3b82f6;color:#fff;font-weight:bold;cursor:pointer;"
+        >
+          Publish to The Unread Archive
+        </button>
+      </form>
+    </aside>
+  </div>
+</section>
+
+<script>
+  // Simple live word count for content
+  (function () {
+    const contentEl = document.getElementById('articleContent');
+    const wordCountEl = document.getElementById('wordCount');
+
+    if (!contentEl || !wordCountEl) return;
+
+    contentEl.addEventListener('input', () => {
+      const text = contentEl.value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      wordCountEl.textContent = 'Word count: ' + words;
+    });
+  })();
+</script>

@@ -22,7 +22,7 @@
 <script>
   (async function () {
     try {
-      const res = await fetch('/archive.json'); // important: leading slash
+      const res = await fetch('/api/archive'); // Fetching from MongoDB via new API snippet
       const data = await res.json();
 
       if (window.UnreadArchive && window.UnreadArchive.ArchiveManager) {
@@ -41,7 +41,7 @@
         }
       }
     } catch (e) {
-      console.warn('fetch /archive.json failed', e);
+      console.warn('fetch /api/archive failed', e);
     }
   })();
 </script>

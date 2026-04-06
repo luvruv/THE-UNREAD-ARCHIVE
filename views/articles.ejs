@@ -1,73 +1,41 @@
 <div class="container">
-  <div class="left-rect" id="quotesContainer" data-search-item="true"></div>
-  <div class="right-grid" id="articlesContainer"></div>
+  <div class="left-rect" id="quotesContainer" data-search-item="true">
+    <h2 style="color: #ffda79;">Quotes of the Day</h2>
+    <blockquote>“The only way to deal with an unfree world is to become so absolutely free that your very existence is an act of rebellion.” <cite>— Albert Camus</cite></blockquote>
+    <br/>
+    <blockquote>“I can be changed by what happens to me. But I refuse to be reduced by it.” <cite>— Maya Angelou</cite></blockquote>
+    <br/>
+    <blockquote>“There is no greater agony than bearing an untold story inside you.” <cite>— Maya Angelou</cite></blockquote>
+  </div>
+
+  <div class="right-grid" id="articlesContainer">
+    <% if (typeof communityArticles !== 'undefined' && communityArticles.length > 0) { %>
+      <% communityArticles.forEach(function(article) { %>
+        <div class="content-card" data-search-item="true">
+          <h2><%= article.title %></h2>
+          <span class="tag" style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-bottom: 8px; display: inline-block;">
+            <%= article.tag %>
+          </span>
+          <p class="meta" style="font-size: 0.9em; color: #bbb; margin-bottom: 10px;">By <%= article.author && article.author.name ? article.author.name : 'Unknown' %> &bull; <%= article.readTime %></p>
+          <p class="excerpt" style="font-size: 0.95em;"><%= article.excerpt %></p>
+          
+          <div class="cta" style="margin-top: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <a href="#" style="background: rgba(255, 255, 255, 0.1); padding: 6px 12px; border-radius: 6px;">Read More</a>
+            
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+              <form action="/articles/<%= article._id %>/bookmark" method="POST" style="margin:0;">
+                <button type="submit" class="subscribe" style="border: 1px solid #ffda79; <%= userBookmarks && userBookmarks.includes(article._id.toString()) ? 'background: #ffda79; color: #111;' : 'background: transparent; color: #ffda79;' %> cursor: pointer; padding: 6px 12px; border-radius: 6px; font-weight: bold; transition: all 0.2s;">
+                  <%= userBookmarks && userBookmarks.includes(article._id.toString()) ? '★ Bookmarked' : '☆ Bookmark' %>
+                </button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div style="grid-column: 1 / -1;">
+        <p style="color:#fff;" data-search-item="true">No articles found in the archive. Log in to write one!</p>
+      </div>
+    <% } %>
+  </div>
 </div>
-
-<script>
-  (function () {
-    // Community articles from MongoDB (injected by server when available)
-    const communityFromDB =
-      <%- JSON.stringify(typeof communityArticles !== 'undefined' ? communityArticles : []) %>;
-
-    fetch('/articles.json')
-      .then(r => r.json())
-      .then(data => {
-        // Left side: quotes
-        const qContainer = document.getElementById('quotesContainer');
-        qContainer.innerHTML =
-          '<h2>Quotes</h2>' +
-          (data.quotes || [])
-            .map(
-              q =>
-                `<blockquote>“${q.text}” <cite>— ${q.author}</cite></blockquote>`
-            )
-            .join('');
-
-        // Curated articles from JSON
-        const poems = (data.poems || []).map((p, idx) => ({
-          id: 'poem_' + idx,
-          title: p.title,
-          author: p.author,
-          tag: 'Poem',
-          excerpt: p.excerpt || p.title,
-          subscribers: p.subscribers || ''
-        }));
-
-        const stories = (data.stories || []).map((s, idx) => ({
-          id: 'story_' + idx,
-          title: s.title,
-          author: s.author,
-          tag: 'Story',
-          excerpt: s.excerpt || s.title,
-          subscribers: s.subscribers || ''
-        }));
-
-        // Community articles mapped to same shape
-        const community = communityFromDB.map(a => ({
-          id: a._id,
-          title: a.title,
-          author: a.author || 'Anonymous',
-          tag: a.tag || 'Community',
-          excerpt: a.excerpt || (a.content || '').slice(0, 100) + '...',
-          subscribers: ''
-        }));
-
-        const allArticles = [...poems, ...stories, ...community];
-
-        if (window.UnreadArchive && window.UnreadArchive.renderArticlesPage) {
-          window.UnreadArchive.renderArticlesPage(allArticles, '#articlesContainer');
-
-          // 🔹 After cards are rendered, mark them as searchable
-          const container = document.getElementById('articlesContainer');
-          if (container) {
-            container.querySelectorAll('.content-card, .card')
-              .forEach(card => card.setAttribute('data-search-item', 'true'));
-          }
-        } else {
-          document.getElementById('articlesContainer').innerHTML =
-            '<p style="color:#fff;" data-search-item="true">Articles helper not loaded.</p>';
-        }
-      })
-      .catch(err => console.error('Error loading /articles.json:', err));
-  })();
-</script>

@@ -48,16 +48,7 @@
           >
         </label>
 
-        <label>
-          Author name (optional)
-          <input
-            type="text"
-            name="author"
-            placeholder="Your name or pen name"
-            value="<%= currentUser ? (currentUser.name || currentUser.email) : '' %>"
-            style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;"
-          >
-        </label>
+        <!-- Author is bound automatically from session -->
 
         <label>
           Estimated read time (optional)
